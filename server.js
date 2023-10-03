@@ -5,10 +5,11 @@ var Strategy = require('passport-saml').Strategy;
 
 passport.use('saml2', new Strategy({
     path: '/login/callback',
-    entryPoint: 'https://openidp.feide.no/simplesaml/saml2/idp/SSOService.php',
-    issuer: 'passport-saml'
+    entryPoint: 'http://localhost:8080/realms/myrealm/protocol/saml',
+    issuer: 'example'
   },
   function(profile, cb) {
+    console.log("profile", profile)
     return cb(null, profile);
   }));
 
@@ -45,20 +46,23 @@ app.use(passport.session());
 // Define routes.
 app.get('/',
   function(req, res) {
+    console.log(req)
     res.render('home', { user: req.user });
   });
 
 app.get('/login',
   function(req, res){
+    console.log(req)
     res.render('login');
   });
 
 app.get('/login/idp',
   passport.authenticate('saml2'));
 
-app.post('/login/callback', 
+app.post('/login/callback',
   passport.authenticate('saml2', { failureRedirect: '/login' }),
   function(req, res) {
+    console.log(req)
     res.redirect('/');
   });
 
